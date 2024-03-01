@@ -7,6 +7,7 @@ from sklearn.model_selection import GridSearchCV
 from src.exception import CustomException
 from src.logger import logging
 import dill
+import pickle
 
 def save_obj(file_path, obj):
     try:
@@ -18,7 +19,14 @@ def save_obj(file_path, obj):
     
     except Exception as e:
         raise CustomException(e, sys)
-        
+    
+    
+def load_object(file_path):
+    try:
+        with open(file_path, 'rb') as file:
+            return pickle.load(file)
+    except Exception as e:
+        raise CustomException(e, sys)    
 
 
 def evaluate_models(X_train, X_test, y_train, y_test, models_dict:dict, params:dict):
