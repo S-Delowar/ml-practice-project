@@ -2,6 +2,7 @@ import os, sys
 import numpy as np, pandas as pd
 
 from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 
 from src.exception import CustomException
 from src.logger import logging
@@ -20,20 +21,27 @@ def save_obj(file_path, obj):
         
 
 
-def evaluate_models(X_train, X_test, y_train, y_test, models_dict:dict):
+def evaluate_models(X_train, X_test, y_train, y_test, models_dict:dict, params:dict):
 
     logging.info("Evaluation Starts")
     
     model_list = []
     r2_score_list = []
     for i in range(len(models_dict)):
-        model_name = list(models_dict.keys())[i]
-        model = list(models_dict.values())[i]        
+        model = list(models_dict.values())[i]   
+        model_key = list(models_dict.keys())[i]
+        param = params[model_key]
+        
+        gs = GridSearchCV(model, param, cv = 3)
+        gs.fit(X_train, y_train)
+        
+        model.set_params(**gs.best_params_)
+                     
         model.fit(X_train, y_train)       
         y_predicted = model.predict(X_test)       
         r2score = r2_score(y_test, y_predicted)
         
-        model_list.append(model_name)
+        model_list.append(model_key)
         r2_score_list.append(r2score)
     
     evaluation_report = list(zip(model_list, r2_score_list))
