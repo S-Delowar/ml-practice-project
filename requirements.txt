@@ -8,4 +8,4 @@ scikit-learn == 1.4.1.post1
 dill == 0.3.8
 Flask == 3.0.2
 
--e .
+# -e .
